@@ -100,18 +100,25 @@ WSGI_APPLICATION = "backend.wsgi.application"
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 if not DATABASE_URL:
-    raise ValueError(
-        "DATABASE_URL is missing in .env"
-    )
-
-
-DATABASES = {
-    "default": dj_database_url.parse(
-        DATABASE_URL,
-        conn_max_age=600,
-        ssl_require=True
-    )
-}
+    if os.environ.get("VERCEL") or os.environ.get("BUILDING_VERCEL"):
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": BASE_DIR / "db.sqlite3",
+            }
+        }
+    else:
+        raise ValueError(
+            "DATABASE_URL is missing in .env"
+        )
+else:
+    DATABASES = {
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
 
 
 
@@ -225,7 +232,7 @@ STORAGES = {
     "staticfiles": {
 
         "BACKEND":
-        "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "whitenoise.storage.CompressedStaticFilesStorage",
 
     },
 
