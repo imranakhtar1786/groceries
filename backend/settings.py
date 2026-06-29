@@ -201,6 +201,14 @@ AWS_S3_ADDRESSING_STYLE = "path"
 
 AWS_QUERYSTRING_AUTH = False
 
+# Construct public S3 custom domain for Supabase to resolve signed-URL / Missing signature error
+if SUPABASE_URL:
+    supabase_host = SUPABASE_URL.replace("https://", "").replace("http://", "").strip("/")
+else:
+    supabase_host = "qhtskxffjwyqjrthgvla.supabase.co"
+
+AWS_S3_CUSTOM_DOMAIN = f"{supabase_host}/storage/v1/object/public/{AWS_STORAGE_BUCKET_NAME}"
+
 
 # Django 5.2 storage config
 
